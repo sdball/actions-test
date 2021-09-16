@@ -6352,20 +6352,22 @@ async function checkComplete(client, owner, repo, ref, checkName, waitInterval) 
   let waits = 0;
   while(true) {
     const allCheckRuns = await fetchCheckRuns(client, owner, repo, ref);
-    console.log('waitFor.checkComplete.allCheckRuns');
-    console.log(allCheckRuns);
+    if (! allCheckRuns.length) {
+      console.log('::error::Did not find any check runs');
+      process.exit(1);
+    }
+    console.log(`waitFor.checkComplete.allCheckRuns count=${allCheckRuns.length}`);
 
     const matchingCheck = allCheckRuns.filter(c => { return c.name == checkName });
-    if (matchingCheck.length) {
-      console.log(`waitFor.checkComplete.matchingCheck name=${checkName}`);
-      console.log(matchingCheck);
-    } else {
-      console.log('error and exit');
+    if (! matchingCheck.length) {
+      console.log('::error::Did not find any check runs with the name "${checkName}"');
+      process.exit(1);
     }
+    console.log(`waitFor.checkComplete.matchingCheck name="${checkName}" count=${matchingCheck.length}`);
 
     const completed = matchingCheck.filter(c => { return c.status == 'completed' });
     if (completed.length) {
-      console.log('Check completed');
+      console.log('waitFor.checkComplete.completed');
       return completed[0];
     }
     waits += 1;
@@ -6393,19 +6395,19 @@ async function run() {
 
   const [owner, repo] = process.env['GITHUB_REPOSITORY'].split('/');
 
-  console.log(`waitFor.run.beginWait owner=${owner} repo=${repo} ref=${ref} check=${checkName} waitInterval=${waitInterval}`);
-  console.log(`::group::waitFor ${checkName}`)
+  console.log(`waitFor.run.beginWait owner="${owner}" repo="${repo}" ref="${ref}" check="${checkName}" waitInterval="${waitInterval}"`);
+  console.log(`::group::waitFor "${checkName}" to complete`)
   const completed = await checkComplete(octokit.rest, owner, repo, ref, checkName, waitInterval);
   console.log('::endgroup::');
-  console.log(`waitFor.run.finishWait owner=${owner} repo=${repo} ref=${ref} check=${checkName} waitInterval=${waitInterval}`);
+  console.log('waitFor.run.finishWait');
 
-  console.log(`waitFor.run.checkComplete conclusion=${completed.conclusion}`);
+  console.log(`waitFor.run.checkComplete conclusion="${completed.conclusion}"`);
   if (allowedConclusions.includes(completed.conclusion)) {
     console.log('waitFor.run.conclusionAccepted');
     return;
   } else {
     console.log('waitFor.run.conclusionRejected');
-    console.log(`::error::Rejected conclusion for ${checkName}`);
+    console.log(`::error::Rejected conclusion for "${checkName}"`);
     return process.exit(1);
   }
 }
