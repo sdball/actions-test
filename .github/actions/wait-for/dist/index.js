@@ -6349,6 +6349,7 @@ function sleep(ms) {
 
 async function checkComplete(client, owner, repo, ref, checkName, waitInterval) {
   const waitIntervalMillis = waitInterval * 1000;
+  let waits = 0;
   while(true) {
     const allCheckRuns = await fetchCheckRuns(client, owner, repo, ref);
     console.log(allCheckRuns);
@@ -6361,8 +6362,9 @@ async function checkComplete(client, owner, repo, ref, checkName, waitInterval) 
       console.log('Check completed');
       return completed[0];
     }
-    console.log('Check not completed, sleeping for ${waitIntervalMillis}ms');
-    sleep(waitIntervalMillis);
+    waits += 1;
+    console.log(`waitFor.checkComplete.sleeping ms=${waitIntervalMillis} waits=${waits}`);
+    await sleep(waitIntervalMillis);
   }
 }
 
