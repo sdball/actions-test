@@ -22,15 +22,28 @@ jobs:
     name: Build and Deploy
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+
       - name: Pretend this is building stuff
         run: sleep 15
+
       - name: Wait for tests to succeed
-        uses: lewagon/wait-on-check-action@v1.0.0
+        uses: ./.github/actions/wait-for
         with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
           ref: ${{ github.ref }}
-          check-name: 'Run Tests'
-          repo-token: ${{ secrets.GITHUB_TOKEN }}
-          wait-interval: 10
+          check_name: 'Run Tests'
+
+      # - name: Wait for tests to succeed
+      #   uses: lewagon/wait-on-check-action@v1.0.0
+      #   with:
+      #     ref: ${{ github.ref }}
+      #     check-name: 'Run Tests'
+      #     repo-token: ${{ secrets.GITHUB_TOKEN }}
+      #     wait-interval: 10
       - name: Pretend this is deploying stuff
         run: |
           date

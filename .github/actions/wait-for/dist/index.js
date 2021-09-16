@@ -6384,8 +6384,20 @@ async function cancelWorkflowRun(octokit, owner, repo, runId) {
 
 async function run() {
   const githubToken = core.getInput('github_token', { required: true });
-  const [owner, repo] = process.env['GITHUB_REPOSITORY'].split('/');
+  const ref = core.getInput('ref', { required: true });
+  const checkName = core.getInput('check_name', { required: true });
+  const waitInterval = core.getInput('wait_interval');
+
+  console.log({
+    githubToken,
+    ref,
+    checkName,
+    waitInterval,
+  });
+
   const octokit = github.getOctokit(githubToken);
+
+  const [owner, repo] = process.env['GITHUB_REPOSITORY'].split('/');
 
   const response = await octokit.rest.checks.listForRef({
     owner,
