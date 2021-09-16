@@ -26,10 +26,16 @@ async function checkComplete(client, owner, repo, ref, checkName, waitInterval) 
   let waits = 0;
   while(true) {
     const allCheckRuns = await fetchCheckRuns(client, owner, repo, ref);
+    console.log('waitFor.checkComplete.allCheckRuns');
     console.log(allCheckRuns);
 
     const matchingCheck = allCheckRuns.filter(c => { return c.name == checkName });
-    console.log(matchingCheck);
+    if (matchingCheck.length) {
+      console.log(`waitFor.checkComplete.matchingCheck name=${checkName}`);
+      console.log(matchingCheck);
+    } else {
+      console.log('error and exit');
+    }
 
     const completed = matchingCheck.filter(c => { return c.status == 'completed' });
     if (completed.length) {
