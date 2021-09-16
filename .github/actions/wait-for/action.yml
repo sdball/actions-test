@@ -10,6 +10,9 @@ inputs:
   wait_interval:
     required: true
     default: 30
+  allowed_conclusions:
+    required: true
+    default: success
 runs:
   using: 'node12'
   main: 'dist/index.js'
