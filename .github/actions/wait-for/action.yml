@@ -1,0 +1,13 @@
+name: Only Latest
+description: Cancel the current run if there are following runs
+inputs:
+  github_token:
+    required: true
+  workflow_file:
+    required: true
+outputs:
+  this_run_cancelled:
+    description: '"true" if this run was cancelled'
+runs:
+  using: 'node12'
+  main: 'dist/index.js'
