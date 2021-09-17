@@ -17,7 +17,7 @@ jobs:
       - name: Pretend these are real tests
         run: |
           sleep 120
-          false
+          true
   deploy:
     name: Build and Deploy
     runs-on: ubuntu-latest
@@ -37,13 +37,6 @@ jobs:
           ref: ${{ github.ref }}
           check_name: 'Run Tests'
 
-      # - name: Wait for tests to succeed
-      #   uses: lewagon/wait-on-check-action@v1.0.0
-      #   with:
-      #     ref: ${{ github.ref }}
-      #     check-name: 'Run Tests'
-      #     repo-token: ${{ secrets.GITHUB_TOKEN }}
-      #     wait-interval: 10
       - name: Pretend this is deploying stuff
         run: |
           date
