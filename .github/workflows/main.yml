@@ -32,8 +32,7 @@ jobs:
         uses: ./.github/actions/wait-for
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          ref: ${{ github.ref }}
-          check_name: 'Run Tests'
+          job_name: 'Run Tests'
 
       - name: Pretend this is deploying stuff
         run: |

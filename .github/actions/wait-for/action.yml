@@ -3,9 +3,7 @@ description: Wait for another job to complete
 inputs:
   github_token:
     required: true
-  ref:
-    required: true
-  check_name:
+  job_name:
     required: true
   wait_interval:
     required: true

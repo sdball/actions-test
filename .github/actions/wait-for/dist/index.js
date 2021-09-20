@@ -6333,39 +6333,40 @@ const logFatal = (msg) => {
   return process.exit(1);
 };
 
-async function fetchCheckRuns(client, owner, repo, ref) {
-  console.log('waitFor.fetchCheckRuns');
-  const response = await client.checks.listForRef({
+async function fetchJobsForWorkflowRun(client, owner, repo) {
+  console.log('waitFor.fetchJobsForWorkflowRun');
+  console.log('wait.fetchJobsForWorkflowRun.calling API actions.listJobsForWorkflowRun');
+  const response = await client.actions.listJobsForWorkflowRun({
     owner,
     repo,
-    ref,
+    run_id: process.env['GITHUB_RUN_ID'],
   });
-  return response.data.check_runs;
+  return response.data.jobs;
 }
 
 function sleep(ms) {
   return new Promise(resolve => setTimeout(resolve, ms));
 }
 
-async function checkComplete(client, owner, repo, ref, checkName, waitInterval) {
+async function checkComplete(client, owner, repo, jobName, waitInterval) {
   const waitIntervalMillis = waitInterval * 1000;
   let waits = 0;
   while(true) {
-    const allCheckRuns = await fetchCheckRuns(client, owner, repo, ref);
-    if (! allCheckRuns.length) {
-      console.log('::error::Did not find any check runs');
+    const jobsForWorkflowRun = await fetchJobsForWorkflowRun(client, owner, repo);
+    if (! jobsForWorkflowRun.length) {
+      console.log('::error::Did not find any jobs from the current workflow run');
       process.exit(1);
     }
-    console.log(`waitFor.checkComplete.allCheckRuns count=${allCheckRuns.length}`);
+    console.log(`waitFor.checkComplete.jobsForWorkflowRun count=${jobsForWorkflowRun.length}`);
 
-    const matchingCheck = allCheckRuns.filter(c => { return c.name == checkName });
-    if (! matchingCheck.length) {
-      console.log('::error::Did not find any check runs with the name "${checkName}"');
+    const matchingJob = jobsForWorkflowRun.filter(job => { return job.name == jobName });
+    if (! matchingJob.length) {
+      console.log(`::error::Did not find any job with the name "${jobName}"`);
       process.exit(1);
     }
-    console.log(`waitFor.checkComplete.matchingCheck name="${checkName}" count=${matchingCheck.length}`);
+    console.log(`waitFor.checkComplete.matchingJob name="${jobName}" count=${matchingJob.length}`);
 
-    const completed = matchingCheck.filter(c => { return c.status == 'completed' });
+    const completed = matchingJob.filter(job => { return job.status == 'completed' });
     if (completed.length) {
       console.log('waitFor.checkComplete.completed');
       return completed[0];
@@ -6378,15 +6379,13 @@ async function checkComplete(client, owner, repo, ref, checkName, waitInterval) 
 
 async function run() {
   const githubToken = core.getInput('github_token', { required: true });
-  const ref = core.getInput('ref', { required: true });
-  const checkName = core.getInput('check_name', { required: true });
+  const jobName = core.getInput('job_name', { required: true });
   const waitInterval = core.getInput('wait_interval');
   const allowedConclusions = core.getInput('allowed_conclusions').split(/,\s+/);
 
   console.log({
     githubToken,
-    ref,
-    checkName,
+    jobName,
     waitInterval,
     allowedConclusions,
   });
@@ -6395,9 +6394,9 @@ async function run() {
 
   const [owner, repo] = process.env['GITHUB_REPOSITORY'].split('/');
 
-  console.log(`waitFor.run.beginWait owner="${owner}" repo="${repo}" ref="${ref}" check="${checkName}" waitInterval="${waitInterval}"`);
-  console.log(`::group::waitFor "${checkName}" to complete`)
-  const completed = await checkComplete(octokit.rest, owner, repo, ref, checkName, waitInterval);
+  console.log(`waitFor.run.beginWait owner="${owner}" repo="${repo}" check="${jobName}" waitInterval="${waitInterval}"`);
+  console.log(`::group::waitFor "${jobName}" to complete`)
+  const completed = await checkComplete(octokit.rest, owner, repo, jobName, waitInterval);
   console.log('::endgroup::');
   console.log('waitFor.run.finishWait');
 
@@ -6407,7 +6406,7 @@ async function run() {
     return;
   } else {
     console.log('waitFor.run.conclusionRejected');
-    console.log(`::error::Rejected conclusion for "${checkName}"`);
+    console.log(`::error::Rejected conclusion for "${jobName}"`);
     return process.exit(1);
   }
 }
