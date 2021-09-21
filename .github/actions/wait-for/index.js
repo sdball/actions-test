@@ -77,6 +77,8 @@ async function run() {
   console.log(`waitFor.run.checkComplete conclusion="${completed.conclusion}"`);
   if (allowedConclusions.includes(completed.conclusion)) {
     console.log('waitFor.run.conclusionAccepted');
+    core.notice("useful URL: https://www.rakeroutes.com")
+    core.notice('useful URL as an anchor: <a href="https://www.rakeroutes.com">Rake Routes</a>')
     return;
   } else {
     console.log('waitFor.run.conclusionRejected');
