@@ -14,7 +14,7 @@ jobs:
 
       - name: Pretend these are real tests
         run: |
-          sleep 120
+          sleep 60
           true
   deploy:
     name: Build and Deploy
