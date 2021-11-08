@@ -19,6 +19,7 @@ jobs:
   deploy:
     name: Build and Deploy
     runs-on: ubuntu-latest
+    needs: [test]
     steps:
       - name: Checkout
         uses: actions/checkout@v2
@@ -27,12 +28,6 @@ jobs:
 
       - name: Pretend this is building stuff
         run: sleep 15
-
-      - name: Wait for tests to succeed
-        uses: ./.github/actions/wait-for
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          job_name: 'Run Tests'
 
       - name: Pretend this is deploying stuff
         run: |
