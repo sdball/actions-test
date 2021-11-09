@@ -52,9 +52,6 @@ def duration_metrics(github_client, repo, run)
   tags = ["workflow:#{workflow["name"]}", "project:#{repo}"]
   jobs = prior_jobs(github_client, github_client.get(workflow["jobs_url"]))
   branch = workflow["head_branch"]
-  if TAGGED_BRANCHES != []
-    tags += ["branch:#{TAGGED_BRANCHES.include?(branch) ? branch : "other" }"]
-  end
   collect_metrics(jobs, tags)
 end
 
