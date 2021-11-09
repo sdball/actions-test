@@ -33,3 +33,17 @@ jobs:
         run: |
           date
           echo "Deploying the stuff"
+  metrics:
+    name: Metrics
+    runs-on: ubuntu-latest
+    needs: [test, deploy]
+    if: ${{ always() }}
+    steps:
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: 2.6
+      - uses: ./.github/actions/metrics
+        with:
+          metrics-type: 'job_metrics'
+        env:
+          OCTOKIT_TOKEN: ${{ secrets.OCTOKIT_TOKEN }}
