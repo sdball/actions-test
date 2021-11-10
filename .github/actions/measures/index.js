@@ -51,17 +51,18 @@ async function checkComplete(client, owner, repo, jobName, waitInterval) {
   }
 }
 
-const durationMetrics = async (octokit, repo, run) => {
+const durationMetrics = async (octokit, owner, repo, run_id) => {
+  const workflow = octokit.rest.actions.getWorkflowRun({ owner, repo, run_id });
+  core.info(workflow);
   return "eyy metrics";
 };
 
 async function run() {
   const token = process.env.OCTOKIT_TOKEN;
   const octokit = github.getOctokit(token);
-  const args = process.argv.slice(2);
-  const repo = args[0];
-  const run = args[1];
-  const metrics = await durationMetrics(octokit, repo, run);
+  const [owner, repo] = process.env['GITHUB_REPOSITORY'].split('/');
+  const run = process.env['GITHUB_RUN_ID'];
+  const metrics = await durationMetrics(octokit, owner, repo, run);
   core.info(metrics);
 }
 
