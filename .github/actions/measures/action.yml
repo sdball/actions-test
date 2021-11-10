@@ -1,0 +1,5 @@
+name: Measures
+description: Measure metrics of the workflow
+runs:
+  using: 'node12'
+  main: 'dist/index.js'

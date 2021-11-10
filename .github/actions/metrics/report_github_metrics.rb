@@ -61,10 +61,7 @@ github_client = Octokit::Client.new(:access_token => ENV['OCTOKIT_TOKEN'])
 
 metrics = nil
 
-case ENV['ACTION'].strip
-when "job_metrics"
-  metrics = duration_metrics(github_client, repo, run)
-end
+metrics = duration_metrics(github_client, repo, run)
 
 if metrics
   submit_metrics(metrics)

@@ -51,3 +51,6 @@ jobs:
           metrics-type: 'job_metrics'
         env:
           OCTOKIT_TOKEN: ${{ secrets.OCTOKIT_TOKEN }}
+      - uses: ./.github/actions/measures
+        env:
+          OCTOKIT_TOKEN: ${{ secrets.OCTOKIT_TOKEN }}
