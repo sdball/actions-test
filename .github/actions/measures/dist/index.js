@@ -6388,6 +6388,7 @@ async function run() {
   const repo = args[0];
   const run = args[1];
   const metrics = await durationMetrics(octokit, repo, run);
+  core.info(metrics);
 }
 
   // const githubToken = core.getInput('github_token', { required: true });
