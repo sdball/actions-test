@@ -6386,9 +6386,12 @@ const durationMetrics = async (octokit, owner, repo, run_id) => {
   const workflow = workflowResponse.data;
   const tags = [`workflow:${workflow.name}`, `project:${repo}`]
   const jobs = await workflowJobs(octokit, octokit.request(workflow.jobs_url));
-  core.info("WORKFLOW", JSON.stringify(workflow));
-  core.info("TAGS", JSON.stringify(tags));
-  core.info("JOBS", JSON.stringify(jobs));
+  core.info("WORKFLOW");
+  core.info(JSON.stringify(workflow));
+  core.info("TAGS");
+  core.info(JSON.stringify(tags));
+  core.info("jobs");
+  core.info(JSON.stringify(jobs));
   return "eyy metrics";
 };
 
