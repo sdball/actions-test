@@ -6379,7 +6379,7 @@ async function checkComplete(client, owner, repo, jobName, waitInterval) {
 
 const durationMetrics = async (octokit, owner, repo, run_id) => {
   const workflow = await octokit.rest.actions.getWorkflowRun({ owner, repo, run_id });
-  core.info(workflow);
+  core.info(JSON.stringify(workflow));
   return "eyy metrics";
 };
 
