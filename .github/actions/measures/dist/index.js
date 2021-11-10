@@ -6378,7 +6378,7 @@ async function checkComplete(client, owner, repo, jobName, waitInterval) {
 }
 
 const workflowJobs = async (octokit, jobs) => {
-  return jobs.data;
+  return jobs;
 };
 
 const durationMetrics = async (octokit, owner, repo, run_id) => {
@@ -6390,7 +6390,7 @@ const durationMetrics = async (octokit, owner, repo, run_id) => {
   core.info(JSON.stringify(workflow));
   core.info("TAGS");
   core.info(JSON.stringify(tags));
-  core.info("jobs");
+  core.info("JOBS");
   core.info(JSON.stringify(jobs));
   return "eyy metrics";
 };
