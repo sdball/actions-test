@@ -51,9 +51,20 @@ async function checkComplete(client, owner, repo, jobName, waitInterval) {
   }
 }
 
+const workflowJobs = async (octokit, jobs) => {
+  return jobs;
+};
+
 const durationMetrics = async (octokit, owner, repo, run_id) => {
-  const workflow = await octokit.rest.actions.getWorkflowRun({ owner, repo, run_id });
-  core.info(JSON.stringify(workflow));
+  const workflowResponse = await octokit.rest.actions.getWorkflowRun({ owner, repo, run_id });
+  const workflow = workflowResponse.data;
+  const tags = [`workflow:${workflow.name}`, `project:${repo}`]
+  const jobs = await workflowJobs(octokit, octokit.request(workflow.jobs_url));
+  core.info(JSON.stringify({
+    workflow,
+    tags,
+    jobs,
+  }));
   return "eyy metrics";
 };
 
