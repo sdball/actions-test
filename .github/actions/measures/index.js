@@ -106,49 +106,21 @@ const gatherWorkflowMetrics = (jobs, tags) => {
   }];
 };
 
+const submit_metrics = (metrics) => {
+  metrics.forEach((metric) => {
+    core.info(metric);
+    core.info(metric.measurement, metric.fields, metric.tags);
+  });
+};
+
 async function run() {
   const token = process.env.OCTOKIT_TOKEN;
   const octokit = github.getOctokit(token);
   const [owner, repo] = process.env['GITHUB_REPOSITORY'].split('/');
   const run = process.env['GITHUB_RUN_ID'];
   const metrics = await durationMetrics(octokit, owner, repo, run);
-  core.info(JSON.stringify(metrics));
+  submit_metrics(metrics);
 }
-
-  // const githubToken = core.getInput('github_token', { required: true });
-  // const jobName = core.getInput('job_name', { required: true });
-  // const waitInterval = core.getInput('wait_interval');
-  // const allowedConclusions = core.getInput('allowed_conclusions').split(/,\s+/);
-
-  // console.log({
-  //   githubToken,
-  //   jobName,
-  //   waitInterval,
-  //   allowedConclusions,
-  // });
-
-  // const octokit = github.getOctokit(githubToken);
-
-  // const [owner, repo] = process.env['GITHUB_REPOSITORY'].split('/');
-
-  // console.log(`waitFor.run.beginWait owner="${owner}" repo="${repo}" check="${jobName}" waitInterval="${waitInterval}"`);
-  // console.log(`::group::waitFor "${jobName}" to complete`)
-  // const completed = await checkComplete(octokit.rest, owner, repo, jobName, waitInterval);
-  // console.log('::endgroup::');
-  // console.log('waitFor.run.finishWait');
-
-  // console.log(`waitFor.run.checkComplete conclusion="${completed.conclusion}"`);
-  // if (allowedConclusions.includes(completed.conclusion)) {
-  //   console.log('waitFor.run.conclusionAccepted');
-  //   core.notice("useful URL: https://www.rakeroutes.com")
-  //   core.notice('useful URL as an anchor: <a href="https://www.rakeroutes.com">Rake Routes</a>')
-  //   return;
-  // } else {
-  //   console.log('waitFor.run.conclusionRejected');
-  //   console.log(`::error::Rejected conclusion for "${jobName}"`);
-  //   return process.exit(1);
-  // }
-// }
 
 run().catch((err) => {
   logFatal(err);
