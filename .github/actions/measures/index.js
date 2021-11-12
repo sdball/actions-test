@@ -74,29 +74,36 @@ const durationMetrics = async (octokit, owner, repo, run_id) => {
 const gatherMetrics = (jobs, tags) => {
   const jobMetrics = gatherJobMetrics(jobs, tags);
   const workflowMetrics = gatherWorkflowMetrics(jobs, tags);
-  core.info('JOB METRICS');
-  core.info(JSON.stringify(jobMetrics));
-  core.info('WORKFLOW METRICS');
-  core.info(JSON.stringify(workflowMetrics));
-  return jobMetrics.concat(workflowMetrics);
+  return [...jobMetrics, ...workflowMetrics];
 };
 
 const gatherJobMetrics = (jobs, tags) => {
   return jobs.map((job) => {
-    return [
-      "job_duration",
-      Date.parse(job.completed_at) - Date.parse(job.started_at),
-      {
+    return {
+      measurement: 'github_actions',
+      fields: {
+        job_duration: Date.parse(job.completed_at) - Date.parse(job.started_at),
+      },
+      tags: {
         ...tags,
         status: job.conclusion,
         name: job.name,
       }
-    ];
+    };
   });
 };
 
 const gatherWorkflowMetrics = (jobs, tags) => {
-  return [];
+  const start = Math.min(...jobs.map((job) => { return Date.parse(job.started_at) }));
+  const finish = Math.max(...jobs.map((job) => { return Date.parse(job.completed_at) }));
+  const status = (jobs.every((job) => { return ['success', 'skipped'].includes(job.conclusion); })) ? 'success' : 'failure';
+  return [{
+    measurement: 'github_actions',
+    fields: {
+      workflow_duration: finish - start,
+    },
+    tags: { ...tags, status: status },
+  }];
 };
 
 async function run() {
