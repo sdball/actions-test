@@ -51,7 +51,8 @@ async function checkComplete(client, owner, repo, jobName, waitInterval) {
   }
 }
 
-const workflowJobs = async (octokit, jobs) => {
+const workflowJobs = async (jobsResponse) => {
+  const jobs = jobsResponse.data.jobs;
   return jobs;
 };
 
