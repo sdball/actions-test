@@ -81,7 +81,7 @@ const gatherMetrics = (jobs, tags) => {
   return jobMetrics.concat(workflowMetrics);
 };
 
-const gatherJobMetrics = async (jobs, tags) => {
+const gatherJobMetrics = (jobs, tags) => {
   return jobs.map((job) => {
     return [
       "job_duration",
@@ -93,7 +93,7 @@ const gatherJobMetrics = async (jobs, tags) => {
   });
 };
 
-const gatherWorkflowMetrics = async (jobs, tags) => {
+const gatherWorkflowMetrics = (jobs, tags) => {
   return [];
 };
 
