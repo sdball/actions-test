@@ -6377,16 +6377,20 @@ async function checkComplete(client, owner, repo, jobName, waitInterval) {
   }
 }
 
-const workflowJobs = async (jobsResponse) => {
+const completedJobs = async (jobsResponse) => {
   const jobs = jobsResponse.data.jobs;
-  return jobs;
+  const completed = jobs.filter((job) => {
+    return job.conclusion;
+  });
+  core.info(`Found ${completed.count} completed jobs to report from ${jobs.length} total jobs`);
+  return completed;
 };
 
 const durationMetrics = async (octokit, owner, repo, run_id) => {
   const workflowResponse = await octokit.rest.actions.getWorkflowRun({ owner, repo, run_id });
   const workflow = workflowResponse.data;
   const tags = [`workflow:${workflow.name}`, `project:${repo}`]
-  const jobs = await workflowJobs(await octokit.request(workflow.jobs_url));
+  const jobs = await completedJobs(await octokit.request(workflow.jobs_url));
   core.info("WORKFLOW");
   core.info(JSON.stringify(workflow));
   core.info("TAGS");
