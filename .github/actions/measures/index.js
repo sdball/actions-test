@@ -108,8 +108,7 @@ const gatherWorkflowMetrics = (jobs, tags) => {
 
 const submit_metrics = (metrics) => {
   metrics.forEach((metric) => {
-    core.info(metric);
-    core.info(metric.measurement, metric.fields, metric.tags);
+    core.info(JSON.stringify(metric));
   });
 };
 
