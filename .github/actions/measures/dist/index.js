@@ -6389,15 +6389,34 @@ const completedJobs = async (jobsResponse) => {
 const durationMetrics = async (octokit, owner, repo, run_id) => {
   const workflowResponse = await octokit.rest.actions.getWorkflowRun({ owner, repo, run_id });
   const workflow = workflowResponse.data;
-  const tags = [`workflow:${workflow.name}`, `project:${repo}`]
+  const tags = {
+    workflow: workflow.name,
+    project: repo,
+  };
   const jobs = await completedJobs(await octokit.request(workflow.jobs_url));
-  core.info("WORKFLOW");
-  core.info(JSON.stringify(workflow));
-  core.info("TAGS");
-  core.info(JSON.stringify(tags));
-  core.info("JOBS");
-  core.info(JSON.stringify(jobs));
-  return "eyy metrics";
+  return gatherMetrics(jobs, tags);
+};
+
+const gatherMetrics = (jobs, tags) => {
+  const jobMetrics = gatherJobMetrics(jobs, tags);
+  const workflowMetrics = gatherWorkflowMetrics(jobs, tags);
+  return jobMetrics.concat(workflowMetrics);
+};
+
+const gatherJobMetrics = async (jobs, tags) => {
+  return jobs.map((job) => {
+    return [
+      "job_duration",
+      Date.parse(job.completed_at) - Date.parse(job.started_at),
+      Object.assign(tags, {
+        status: job.conclusion,
+        name: job.name,
+      })];
+  });
+};
+
+const gatherWorkflowMetrics = async (jobs, tags) => {
+  return [];
 };
 
 async function run() {
@@ -6406,7 +6425,7 @@ async function run() {
   const [owner, repo] = process.env['GITHUB_REPOSITORY'].split('/');
   const run = process.env['GITHUB_RUN_ID'];
   const metrics = await durationMetrics(octokit, owner, repo, run);
-  core.info(metrics);
+  core.info(JSON.stringify(metrics));
 }
 
   // const githubToken = core.getInput('github_token', { required: true });
