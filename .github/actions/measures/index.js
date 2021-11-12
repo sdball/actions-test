@@ -86,10 +86,12 @@ const gatherJobMetrics = (jobs, tags) => {
     return [
       "job_duration",
       Date.parse(job.completed_at) - Date.parse(job.started_at),
-      Object.assign(tags, {
+      {
+        ...tags,
         status: job.conclusion,
         name: job.name,
-      })];
+      }
+    ];
   });
 };
 
