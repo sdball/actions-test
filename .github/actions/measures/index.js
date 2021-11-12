@@ -56,7 +56,7 @@ const completedJobs = async (jobsResponse) => {
   const completed = jobs.filter((job) => {
     return job.conclusion;
   });
-  core.info(`Found ${completed.count} completed jobs to report from ${jobs.length} total jobs`);
+  core.info(`Found ${completed.length} completed jobs to report from ${jobs.length} total jobs`);
   return completed;
 };
 
