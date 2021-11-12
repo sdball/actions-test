@@ -74,6 +74,10 @@ const durationMetrics = async (octokit, owner, repo, run_id) => {
 const gatherMetrics = (jobs, tags) => {
   const jobMetrics = gatherJobMetrics(jobs, tags);
   const workflowMetrics = gatherWorkflowMetrics(jobs, tags);
+  core.info('JOB METRICS');
+  core.info(JSON.stringify(jobMetrics));
+  core.info('WORKFLOW METRICS');
+  core.info(JSON.stringify(workflowMetrics));
   return jobMetrics.concat(workflowMetrics);
 };
 
